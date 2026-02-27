@@ -12,7 +12,7 @@
     body
     {
       margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, "Noto Sans KR";
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, "Noto Sans KR",Arial, sans-serif;
       background: #f6f7fb;
     }
 
@@ -46,15 +46,13 @@
     gap: 10px;
   }
 
-  .grid .full {
-    grid-column: 1 / -1;
-  }
+  .full{grid-column: 1/-1;}
 
   input 
   {
     width: 100%;
     box-sizing: border-box;
-    padding: 12px 12px;
+    padding: 12px;
     border-radius: 10px;
     border: 1px solid #e6e8ef;
     outline: none;
@@ -72,10 +70,9 @@
   #add 
   {
     width: 100%;
-    padding: 12px 12px;
+    padding: 12px;
     border: 0;
     border-radius: 10px;
-    font-size: 14px;
     font-weight: 800;
     cursor: pointer;
     background: #7c8cff;
@@ -84,38 +81,50 @@
 
   #add:hover { opacity: 0.92; }
 
-  #list > div 
+  #clear
+  {
+    border: 1px solid #e5e7ed;
+    background: #fff;
+    padding: 8px 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-bottom: 10px;
+  }
+
+  #clear:hover { opacity: 0.86;}
+
+  .workout
   {
     display: flex;
     justify-content: space-between;
-    align-items: center;
     gap: 12px;
-    padding: 12px;
+    padding: 14px 14px;
     border: 1px solid #eef0f6;
-    border-radius: 12px;
-    margin-top: 10px;
+    border-radius: 14px;
     background: #fff;
+    margin-top: 10px;
+    align-items: center;
   }
 
-  #list span 
-  {
-    font-size: 14px;
-    line-height: 1.3;
-  }
+  .w-title{font-weight: 900; font-size: 16px;}
+  .w-meta{color: #6b7280; font-size: 13px; margin-top: 4px;}
+  .w-total{margin-top: 6px; font-weight: 900; color: #4f46e5; font-size: 13px;}
 
   .delete 
   {
-    border: 1px solid #e5e7eb;
-    background: #fff;
-    padding: 6px 10px;
-    border-radius: 999px;
+    border: 0;
+    background: #ef4444;
+    color: #fff;
+    padding: 8px 10px;
+    border-radius: 10px;
     cursor: pointer;
-    font-weight: 700;
+    font-weight: 800;
     font-size: 12px;
+    white-space:nowrap;
   }
 
-  .delete:hover { opacity: 0.85; }
-</style>
+  .delete:hover { opacity: 0.92; }
+
   </style>
 </head>
 
@@ -123,27 +132,71 @@
 
   <div class="container">
 
-       <h1>운동 기록</h1>
+  <h1>운동 기록</h1>
 
 
-       <div class="card">
-  <div class="grid">
-    <input id="date" class="full" placeholder="날짜 (예: 2026-02-24)">
-    <input id="name" class="full" placeholder="운동 이름 (예: 벤치프레스)">
-    <input id="weight" placeholder="중량 (kg)">
-    <input id="reps" placeholder="횟수 (회)">
-    <button id="add" class="full">추가</button>
-  </div>
-</div>
+ <div class="card">
+   <div class="grid">
+     <!-- 날짜 자동 입력 on/off-->
+     <label style="display:flex; gap:8px; align-items:center; font-size:13px; color:#555;">
+       <input id="autoDate" type="checkbox" checked>
+       오늘 날짜 자동 입력
+     </label>
+     <input id="date" class="full" placeholder="날짜 (예: 2026-02-24)">
+     <input id="name" class="full" list="nameOptions" placeholder="운동 이름 (예: 벤치프레스)">
+     <datalist id="nameOptions"></datalist>
+     <input id="weight" placeholder="중량 (kg)">
+     <input id="reps" placeholder="횟수 (회)">
+     <input id="sets" placeholder="세트 수">
+     <button id="add" class="full">추가</button>
+   </div>
+ </div>
 
 <div class="card">
+  <button id="clear">전체 삭제</button>
   <h2>기록 리스트</h2>
   <div id="list"></div>
 </div>
        <script>
- 
+
        const addButton = document.getElementById("add");
+       const clearButton = document.getElementById("clear");
        const list = document.getElementById("list");
+
+       const autoDateCheckbox = document.getElementById("autoDate");
+
+      //당일 날짜 자동 입력
+       const today = new Date().toISOString().slice(0, 10);
+
+       // on 일때 날짜 입력
+       function applyAutoDateIfOn()
+       {
+        if(!autoDateCheckbox)
+        return;
+        if(autoDateCheckbox.checked)
+       {
+        document.getElementById("date").value = today;
+       }
+       }
+
+       // 상태 저장/불러오기, 새로고침 해도 유지
+       const savedAutoDate = localStorage.getItem("autoDateOn");
+       if(autoDateCheckbox)
+       {
+        autoDateCheckbox.checked = savedAutoDate === null ? true : savedAutoDate === "true";
+       }
+       
+       //초기 1회만
+       applyAutoDateIfOn();
+
+       //상태 바뀔 때 저장, 날짜 채우기
+       if (autoDateCheckbox) 
+       {
+        autoDateCheckbox.addEventListener("change", () => {
+        localStorage.setItem("autoDateOn", String(autoDateCheckbox.checked));
+        applyAutoDateIfOn(); 
+        });
+       }
 
        function save() 
        {
@@ -155,8 +208,29 @@
          const saved = localStorage.getItem("workouts");
          if (saved) list.innerHTML = saved;
        }
+
+       //최근 입력했던 운동 명 기억하고 불러오기
+       function updateNameOptions()
+       {
+        const optionsE1 = document.getElementById("nameOptions");
+        const saveNames = JSON.parse(localStorage.getItem("workoutNames") || "[]");
+
+        optionsE1.innerHTML = saveNames
+        .slice(0, 20)
+        .map((n) => `<option value="${n}"></option>`)
+        .join("");
+       }
+
+       function saveWorkoutName(name)
+       {
+        const savedNames = JSON.parse(localStorage.getItem("workoutNames") || "[]");
+        const next = [name, ...savedNames.filter((n) => n !== name)];
+        localStorage.setItem("workoutNames", JSON.stringify(next.slice(0, 50)));
+       }
  
        load();
+
+       updateNameOptions();
 
        //저장된 항목 포함, 삭제 버튼 모두 처리 (이벤트 위임)
        list.addEventListener("click", function (e) 
@@ -174,27 +248,67 @@
          const name = document.getElementById("name").value.trim();
          const weight = document.getElementById("weight").value.trim();
          const reps = document.getElementById("reps").value.trim();
- 
-         if (!date || !name || !weight || !reps) 
+         const sets = document.getElementById("sets").value.trim();
+         const totalReps = Number(reps) * Number(sets);
+
+         if (!date || !name || !weight || !reps || !sets) 
          {
            alert("빈칸 없이 입력해줘!");
            return;
          }
+
+         if (isNaN(Number(reps)) || isNaN(Number(sets)) || isNaN(Number(weight)))
+         {
+          alert("중량/횟수/세트는 숫자만 입력해줘!");
+          return;
+         }
  
+         //클래스 변경
          const item = document.createElement("div");
          item.innerHTML = `
-           <span>${date} | ${name} / ${weight}kg | ${reps}회</span>
-           <button class="delete">삭제</button>
-         `;
+           <div class="workout">
+             <div>
+               <div class="w-title">${name}</div>
+               <div class="w-meta">${date} | ${weight}kg | ${reps}회 x ${sets}세트</div>
+               <div class="w-total">총${totalReps}회</div>
+             </div>
+             <button class="delete">삭제</button>
+            </div>
+            `;
 
          list.appendChild(item);
+
          save();
 
-         document.getElementById("date").value = "";
+         saveWorkoutName(name);
+         updateNameOptions();
          document.getElementById("name").value = "";
          document.getElementById("weight").value = "";
          document.getElementById("reps").value = "";
+         document.getElementById("sets").value = "";
+
+         applyAutoDateIfOn();
        });
+
+       //enter키로 기록 추가
+       document.addEventListener("keydown", function (e)
+      {
+        if (e.key === "Enter")
+      {
+        addButton.click();
+      }
+      });
+
+      //전체 삭제
+      clearButton.addEventListener("click", function ()
+     {
+       if (confirm("정말 삭제하시겠습니까?"))
+       {
+        list.innerHTML = "";
+        save();
+       }
+     });
+
      </script>
     </div>
  </body>
