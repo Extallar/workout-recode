@@ -1,67 +1,66 @@
-# 🏋️ 운동 기록 웹 (Workout Tracker)
+# 🏋️ Workout Record App (v1)
 
-간단한 운동 기록을 저장하고 관리할 수 있는 웹 애플리케이션입니다.  
-HTML, CSS, JavaScript만 사용하여 제작한 개인 프로젝트입니다.
-
----
-
-## ✨ 주요 기능
-
-### ✅ 운동 기록 관리
-- 운동 기록 추가
-- 개별 기록 삭제
-- 전체 기록 삭제
-- Enter 키로 빠른 기록 추가
-
-### ✅ 자동 계산 기능
-- 세트 × 횟수 → 총 반복수 자동 계산
-- 입력값 숫자 검증
-
-### ✅ 날짜 자동 입력
-- 오늘 날짜 자동 입력 기능
-- ON / OFF 토글 지원
-- 설정 상태 localStorage 저장
-
-### ✅ 사용자 편의 기능
-- 최근 입력한 운동 이름 자동완성
-- 입력 후 자동 초기화
-- 새로고침 후에도 기록 유지 (localStorage)
-
-### ✅ UI / UX
-- 카드 형태 운동 기록 UI
-- 반응형 레이아웃(Grid 사용)
-- 직관적인 입력 인터페이스
+간단한 운동 기록 웹 애플리케이션입니다.  
+무게, 횟수, 세트를 입력하면 총 운동 볼륨을 계산하고 카드 형태로 기록합니다.
 
 ---
 
-## 🛠 사용 기술
+## 📌 Features
 
-- HTML5
-- CSS3 (Flexbox / Grid)
-- Vanilla JavaScript
-- LocalStorage API
-- Git & GitHub
-
----
-
-## 📌 프로젝트 목적
-
-- JavaScript DOM 조작 이해
-- 이벤트 처리 및 상태 관리 학습
-- LocalStorage 활용 경험
-- 실제 동작하는 웹 애플리케이션 제작
+- ✅ 무게 × 횟수 × 세트 자동 계산
+- ✅ 운동 기록 카드 생성
+- ✅ 총 볼륨 표시
+- ✅ 기본적인 DOM 조작 및 이벤트 처리 구현
 
 ---
 
-## 🚀 향후 개선 예정
+## 🧮 Volume Formula
 
-- 운동 통계 기능 (총 볼륨 계산)
-- 다크모드 지원
-- 모바일 UI 최적화
-- 데이터 정렬 기능
+Total Volume = weight × reps × sets
+
+예시:
+66kg × 2회 × 3세트 = 396kg
 
 ---
 
-## 👨‍💻 개발자
+## 🛠 Tech Stack
 
-개인 학습용 프로젝트
+- HTML
+- CSS
+- JavaScript (Vanilla JS)
+- VS Code + Live Server
+
+---
+
+## 📂 Project Structure
+
+workout-recode/
+ ├── index.html
+ ├── style.css
+ └── script.js
+
+---
+
+## 🎯 What I Learned
+
+- 이벤트 리스너 중복 등록 문제 해결
+- 숫자형 변환(Number())의 중요성 이해
+- DOM 렌더링 구조 개선 경험
+- 입력 처리 및 계산 로직 디버깅
+
+---
+
+## 🚀 Future Plans (v2)
+
+- LocalStorage 저장 기능 추가
+- 기록 삭제 기능
+- 날짜별 정렬
+- 코드 구조 분리 (ui.js / data.js / main.js)
+- 운동 통계 기능 추가
+
+---
+
+## 👨‍💻 Author
+
+Computer Engineering Student  
+Building a workout tracking web app step by step.
