@@ -148,6 +148,8 @@
      <input id="weight" placeholder="중량 (kg)">
      <input id="reps" placeholder="횟수 (회)">
      <input id="sets" placeholder="세트 수">
+     <!-- 볼륨 자동 계산-->
+     <div id="preview" style="font-size: 13px; margin-top: 6px; color: #4f46e5;"></div>
      <button id="add" class="full">추가</button>
    </div>
  </div>
@@ -159,6 +161,31 @@
 </div>
        <script>
 
+       function updatePreview()
+       {
+        const weight = Number(document.getElementById("weight").value);
+        const reps = Number(document.getElementById("reps").value);
+        const sets = Number(document.getElementById("sets").value);
+
+        const preview = document.getElementById("preview");
+
+        // 볼륨 계산
+         if (!weight || !reps || !sets)
+         {
+          preview.textContent = "";
+          return;
+         }
+
+         const totalReps = reps * sets;
+         const totalVolume = weight * reps * sets;
+
+         preview.textContent = `총 반복수: ${totalReps}회 · 볼륨: ${totalVolume.toLocaleString()}kg`;
+       }
+
+       document.getElementById("weight").addEventListener("input", updatePreview);
+       document.getElementById("reps").addEventListener("input", updatePreview);
+       document.getElementById("sets").addEventListener("input", updatePreview);
+      
        const addButton = document.getElementById("add");
        const clearButton = document.getElementById("clear");
        const list = document.getElementById("list");
@@ -249,7 +276,15 @@
          const weight = document.getElementById("weight").value.trim();
          const reps = document.getElementById("reps").value.trim();
          const sets = document.getElementById("sets").value.trim();
-         const totalReps = Number(reps) * Number(sets);
+
+         const weightNum = parseFloat(weight);
+         const repsNum = parseInt(reps);
+         const setsNum = parseInt(sets);
+
+         const totalReps = repsNum * setsNum;
+         const totalVolume = weightNum * repsNum * setsNum;
+
+         const volumeText = totalVolume.toLocaleString("ko-KR");
 
          if (!date || !name || !weight || !reps || !sets) 
          {
@@ -270,7 +305,7 @@
              <div>
                <div class="w-title">${name}</div>
                <div class="w-meta">${date} | ${weight}kg | ${reps}회 x ${sets}세트</div>
-               <div class="w-total">총${totalReps}회</div>
+               <div class="w-total">총${totalReps}회 · 볼륨 ${volumeText}kg</div>
              </div>
              <button class="delete">삭제</button>
             </div>
@@ -288,6 +323,8 @@
          document.getElementById("sets").value = "";
 
          applyAutoDateIfOn();
+         //볼륨 최신화
+         updatePreview();
        });
 
        //enter키로 기록 추가
